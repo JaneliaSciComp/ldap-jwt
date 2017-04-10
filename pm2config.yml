@@ -1,0 +1,8 @@
+apps:
+  - script   : index.js
+    name     : ldap-jwt
+    instances: 4
+    exec_mode: cluster_mode
+    env      :
+      PORT: 8030
+

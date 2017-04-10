@@ -37,11 +37,11 @@ app.post('/authenticate', function (req, res) {
                 var token = jwt.encode({
                     exp: expires,
                     user_name: user.uid,
-                    full_name: user.cn,
+                    full_name: user.displayName,
                     mail: user.mail
                 }, app.get('jwtTokenSecret'));
 
-                res.json({token: token, full_name: user.cn});
+                res.json({token: token, user_name: user.uid});
             })
             .catch(function (err) {
                 // Ldap reconnect config needs to be set to true to reliably
@@ -74,15 +74,10 @@ app.post('/verify', function (req, res) {
     if (token) {
         try {
             var decoded = jwt.decode(token, app.get('jwtTokenSecret'));
-
             if (decoded.exp <= Date.now()) {
                 res.status(400).send({ error: 'Access token has expired'});
             } else {
-                res.json({
-                    user_name: decoded.user_name,
-                    full_name: decoded.full_name,
-                    mail: decoded.mail
-                });
+                res.json(decoded)
             }
         } catch (err) {
             res.status(500).send({ error: 'Access token could not be decoded'});

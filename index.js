@@ -43,6 +43,7 @@ app.post('/authenticate', function (req, res) {
                     mail: user.mail
                 }, app.get('jwtTokenSecret'));
 
+                console.log("Generated JWT for "+user.uid+" expiring "+expires)
                 res.json({token: token, user_name: user.uid});
             })
             .catch(function (err) {
@@ -57,6 +58,7 @@ app.post('/authenticate', function (req, res) {
 
             });
         } else {
+            console.log("No username or password supplied to authenticate")
             res.status(400).send({error: 'No username or password supplied'});
         }
 });
@@ -67,11 +69,14 @@ app.post('/verify', function (req, res) {
         try {
             var decoded = jwt.decode(token, app.get('jwtTokenSecret'));
             if (decoded.exp <= Date.now()) {
+                console.log("JWT has expired for "+decoded.user_name)
                 res.status(400).send({ error: 'Access token has expired'});
             } else {
+                console.log("Verified JWT for "+decoded.user_name+" expiring "+decoded.exp)
                 res.json(decoded)
             }
         } catch (err) {
+            console.log("JWT "+token+" cannot be decoded")
             res.status(500).send({ error: 'Access token could not be decoded'});
         }
     } else {

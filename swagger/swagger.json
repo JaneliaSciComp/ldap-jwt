@@ -1,0 +1,110 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "JWT Service",
+        "description": "Generates JWT tokens based on Janelia LDAP authentication",
+        "version": "1.0.0"
+    },
+    "host": "api.int.janelia.org:8030",
+    "schemes": [
+        "http"
+    ],
+    "basePath": "/",
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/authenticate": {
+            "post": {
+                "summary": "Authenticate",
+                "description": "Authenticates the given user/password against the Janelia LDAP directory and returns a JWT token if successful\n",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/AuthObject"
+                        },
+                        "description": "Latitude component of location.",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Wrapped JWT",
+                        "schema": {
+                            "$ref": "#/definitions/EncodedToken"
+                        }
+                    }
+                }
+            }
+        },
+        "/verify": {
+            "post": {
+                "summary": "Verify JWT",
+                "description": "Verifies the given LDAP token against the private key, and returns the unencoded token if successful\n",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Wrapped JWT",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/EncodedToken"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Unencoded token properties",
+                        "schema": {
+                            "$ref": "#/definitions/TokenProperties"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "AuthObject": {
+            "type": "object",
+            "properties": {
+                "username": {
+                    "type": "string",
+                    "description": "Janelia Username"
+                },
+                "password": {
+                    "type": "string",
+                    "description": "Plaintext password"
+                }
+            }
+        },
+        "EncodedToken": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string",
+                    "description": "Base64 encoded JWT"
+                }
+            }
+        },
+        "TokenProperties": {
+            "type": "object",
+            "properties": {
+                "user_name": {
+                    "type": "string",
+                    "description": "Position in pagination."
+                },
+                "full_name": {
+                    "type": "string",
+                    "description": "Full name of user from LDAP"
+                },
+                "mail": {
+                    "type": "string",
+                    "description": "Email address of user from LDAP"
+                }
+            }
+        }
+    }
+}
+

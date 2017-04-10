@@ -5,14 +5,15 @@ var jwt = require('jwt-simple');
 var moment = require('moment');
 var LdapAuth = require('ldapauth-fork');
 var Promise  = require('promise');
+var express = require('express');
+var path = require('path');
 
-app = require('express')();
-
+app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(require('cors')());
 
-var auth = new LdapAuth(settings.ldap);
+app.use('/', express.static(path.join(__dirname, '/swagger')))
 
 app.set('jwtTokenSecret', settings.jwt.secret);
 

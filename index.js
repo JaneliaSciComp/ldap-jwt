@@ -19,6 +19,7 @@ app.set('jwtTokenSecret', settings.jwt.secret);
 
 var authenticate = function (username, password) {
     return new Promise(function (resolve, reject) {
+        var auth = new LdapAuth(settings.ldap);
         auth.authenticate(username, password, function (err, user) {
             if(err)
                 reject(err);
@@ -45,21 +46,11 @@ app.post('/authenticate', function (req, res) {
                 res.json({token: token, user_name: user.uid});
             })
             .catch(function (err) {
-                // Ldap reconnect config needs to be set to true to reliably
-                // land in this catch when the connection to the ldap server goes away.
-                // REF: https://github.com/vesse/node-ldapauth-fork/issues/23#issuecomment-154487871
-
                 console.log(err);
-
                 if (err.name === 'InvalidCredentialsError' || (typeof err === 'string' && err.match(/no such user/i)) ) {
                     res.status(401).send({ error: 'Wrong user or password'});
-                } else {
-                    // ldapauth-fork or underlying connections may be in an unusable state.
-                    // Reconnect option does re-establish the connections, but will not
-                    // re-bind. Create a new instance of LdapAuth.
-                    // REF: https://github.com/vesse/node-ldapauth-fork/issues/23
-                    // REF: https://github.com/mcavage/node-ldapjs/issues/318
-
+                }
+                else {
                     res.status(500).send({ error: 'Unexpected Error'});
                     auth = new LdapAuth(settings.ldap);
                 }

@@ -34,10 +34,8 @@ var authenticate = function (username, password) {
         auth.on('error', function (err) {
             console.error('LdapError: '+ err.code);
         });
-        auth.authenticate(username, password, function (err, user) {
-            auth.close(function(err2) { 
-                // This always happens with a null error. Why?
-            })
+        // hacked this to skip the auth and just fetch the user data.
+        auth._findUser(username, function(err, user) {
             if(err)
                 reject(err);
             else if (!user)

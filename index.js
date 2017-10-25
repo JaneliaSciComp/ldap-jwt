@@ -35,7 +35,7 @@ app.post('/authenticate', function (req, res) {
     if(req.body.username && req.body.password) {
         authenticate(req.body.username, req.body.password)
             .then(function(user) {
-                var expires = moment().add(2, 'days').valueOf();
+                var expires = parseInt(moment().add(2, 'days').format("X"));
                 var token = jwt.encode({
                     exp: expires,
                     user_name: user.uid,
@@ -68,7 +68,7 @@ app.post('/verify', function (req, res) {
     if (token) {
         try {
             var decoded = jwt.decode(token, app.get('jwtTokenSecret'));
-            if (decoded.exp <= Date.now()) {
+            if (decoded.exp <= parseInt(moment().format("X"))) {
                 console.log("JWT has expired for "+decoded.user_name)
                 res.status(400).send({ error: 'Access token has expired'});
             } else {

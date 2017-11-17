@@ -20,6 +20,9 @@ app.set('jwtTokenSecret', settings.jwt.secret);
 var authenticate = function (username, password) {
     return new Promise(function (resolve, reject) {
         var auth = new LdapAuth(settings.ldap);
+        auth.on('error', function (err) {
+            console.error('LdapAuth: ', err);
+        });
         auth.authenticate(username, password, function (err, user) {
             if(err)
                 reject(err);

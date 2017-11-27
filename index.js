@@ -21,9 +21,12 @@ var authenticate = function (username, password) {
     return new Promise(function (resolve, reject) {
         var auth = new LdapAuth(settings.ldap);
         auth.on('error', function (err) {
-            console.error('LdapAuth: ', err);
+            console.error('LdapError: '+ err.code);
         });
         auth.authenticate(username, password, function (err, user) {
+            auth.close(function(err2) { 
+                // This always happens with a null error. Why?
+            })
             if(err)
                 reject(err);
             else if (!user)
@@ -50,15 +53,19 @@ app.post('/authenticate', function (req, res) {
                 res.json({token: token, user_name: user.uid});
             })
             .catch(function (err) {
-                console.log(err);
-                if (err.name === 'InvalidCredentialsError' || (typeof err === 'string' && err.match(/no such user/i)) ) {
+                if (err.name === 'InvalidCredentialsError') {
+                    console.log("Invalid password for: "+req.body.username);
+                    res.status(401).send({ error: 'Wrong user or password'});
+                }
+                else if (typeof err === 'string' && err.match(/no such user/i)) {
+                    console.log("No such user: "+req.body.username);
                     res.status(401).send({ error: 'Wrong user or password'});
                 }
                 else {
+                    console.log("Unexpected error: ", err);
                     res.status(500).send({ error: 'Unexpected Error'});
                     auth = new LdapAuth(settings.ldap);
                 }
-
             });
         } else {
             console.log("No username or password supplied to authenticate")

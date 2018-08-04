@@ -1,6 +1,6 @@
 # Example Docker Usage:
-#   docker build -t ldap-jwt .
-#   docker run -p 3000:3000 --rm -it -v "$(pwd)/config/config.test.json:/usr/src/app/config/config.json" ldap-jwt
+#   docker build -t janelia/ldap-jwt .
+#   docker run -p 3000:3000 --rm -it janelia/ldap-jwt
 
 FROM node:6.9.2
 

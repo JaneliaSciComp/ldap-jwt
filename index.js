@@ -15,7 +15,18 @@ app.use(require('cors')());
 
 app.use('/', express.static(path.join(__dirname, '/swagger')))
 
-app.set('jwtTokenSecret', settings.jwt.secret);
+if (settings.jwt.hasOwnProperty('secret')) {
+    console.log("Loaded JWT secret from config");
+    app.set('jwtTokenSecret', settings.jwt.secret);
+}
+else if (process.env.hasOwnProperty('JWT_SECRET')) {
+    console.log("Loaded JWT secret from environment");
+    app.set('jwtTokenSecret',process.env.JWT_SECRET);
+}
+else {
+    console.error("JWT secret not specified in config or environment. Set JWT_SECRET to your secret before starting this service.");
+    process.exit(1);
+}
 
 var authenticate = function (username, password) {
     return new Promise(function (resolve, reject) {

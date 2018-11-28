@@ -15,7 +15,7 @@ app.use(require('cors')());
 
 app.use('/', express.static(path.join(__dirname, '/swagger')))
 
-if (settings.jwt.hasOwnProperty('secret')) {
+if (settings.hasOwnProperty('jwt') && settings.jwt.hasOwnProperty('secret')) {
     console.log("Loaded JWT secret from config");
     app.set('jwtTokenSecret', settings.jwt.secret);
 }

@@ -52,7 +52,7 @@ app.post('/authenticate', function (req, res) {
     if(req.body.username && req.body.password) {
         authenticate(req.body.username, req.body.password)
             .then(function(user) {
-                var expires = parseInt(moment().add(2, 'days').format("X"));
+                var expires = parseInt(moment().add(1, 'days').format("X"));
                 var token = jwt.encode({
                     exp: expires,
                     user_name: user.uid,
